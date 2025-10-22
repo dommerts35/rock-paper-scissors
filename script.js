@@ -1,92 +1,73 @@
-const score = document.getElementById("score");
-const winTag = document.getElementById("winText");
+const scoreEl = document.getElementById("score");
+const resultEl = document.getElementById("winText");
+const restartBtn = document.getElementById("restart");
+const choiceButtons = document.querySelectorAll(".choice-btn");
+
 let humanScore = 0;
 let computerScore = 0;
+const WINNING_SCORE = 5;
 
-let resetGame = () => {
-    const sect = document.getElementById("below");
-    const btn = document.createElement("button");
+const choices = ["rock", "paper", "scissors"];
 
-    btn.textContent = "Restart?";
-    sect.appendChild(btn);
-    btn.addEventListener("click", () => {
-        humanScore = 0;
-        computerScore = 0;
-        btn.remove();
-        winTag.textContent = "Choose your weapon to start...";
-        score.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
-    });
-}
+const getComputerChoice = () =>
+  choices[Math.floor(Math.random() * choices.length)];
 
-let updateScore = (code) => {
-    if (code === 1) {
-        humanScore++;
-    } else {
-        computerScore++;
-    }
-    if (humanScore === 5) {
-        winTag.textContent = "You have won!";
-        score.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
-        resetGame();
-    } else if (computerScore === 5) {
-        winTag.textContent = "The Clanker won...";
-        score.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
-        resetGame();
-    } else {
-        score.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
-    }
-}
+const getRoundResult = (human, computer) => {
+  if (human === computer) return "draw";
 
-let getComputerChoice = () => {
-    let randomNum = Math.random();
-    let choice = null;
-    if (randomNum < .66 && randomNum > .33) {
-        choice = "paper";
-    } else if (randomNum > .66) {
-        choice = "rock";
-    } else {
-        choice = "scissors";
-    }
-    return choice
-}
+  const winMap = {
+    rock: "scissors",
+    paper: "rock",
+    scissors: "paper",
+  };
 
-let playRound = (human, computer) => {
-    if (human === "paper" && computer === "rock") {
-        updateScore(1);
-        return "Human wins! Paper beats rock!";
-    } else if (human === "rock" && computer === "scissors") {
-        updateScore(1);
-        return "Human wins! Rock beats scissors!";
-    } else if (human === "scissors" && computer === "paper") {
-        updateScore(1);
-        return "Human wins! Scissors beat paper";
-    } else if (computer === "paper" && human === "rock") {
-        updateScore(2);
-        return "Computer wins! Paper beats rock!";
-    } else if (computer === "rock" && human === "scissors") {
-        updateScore(2);
-        return "Computer wins! Rock beats scissors!";
-    } else if (computer === "scissors" && human === "paper") {
-        updateScore(2);
-        return "Computer wins! Scissors beat paper";
-    } else {
-        return `It's a draw! You put ${human} and Computer put ${computer}.`;
-    }
-}
+  return winMap[human] === computer ? "human" : "computer";
+};
 
-const rockBtn = document.getElementById("rock");
-const scissorsBtn = document.getElementById("scissors");
-const paperBtn = document.getElementById("paper");
+const updateScoreDisplay = () => {
+  scoreEl.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
+};
 
-rockBtn.addEventListener("click", (e) => {
-    const comp = getComputerChoice();
-    winTag.textContent = playRound("rock", comp);
+const showWinnerMessage = (winner) => {
+  if (winner === "human") {
+    resultEl.textContent = "🎉 You reached 5 first — You win!";
+  } else {
+    resultEl.textContent = "💀 The computer wins this time...";
+  }
+  restartBtn.classList.remove("hidden");
+};
+
+const handleChoice = (humanChoice) => {
+  const computerChoice = getComputerChoice();
+  const result = getRoundResult(humanChoice, computerChoice);
+
+  if (result === "draw") {
+    resultEl.textContent = `🤝 It's a draw! You both chose ${humanChoice}.`;
+  } else if (result === "human") {
+    humanScore++;
+    resultEl.textContent = `✅ You win! ${humanChoice} beats ${computerChoice}.`;
+  } else {
+    computerScore++;
+    resultEl.textContent = `❌ Computer wins! ${computerChoice} beats ${humanChoice}.`;
+  }
+
+  updateScoreDisplay();
+
+  if (humanScore === WINNING_SCORE || computerScore === WINNING_SCORE) {
+    showWinnerMessage(humanScore === WINNING_SCORE ? "human" : "computer");
+    choiceButtons.forEach(btn => btn.disabled = true);
+  }
+};
+
+choiceButtons.forEach((btn) => {
+  btn.addEventListener("click", () => handleChoice(btn.dataset.choice));
 });
-scissorsBtn.addEventListener("click", (e) => {
-    const comp = getComputerChoice();
-    winTag.textContent = playRound("scissors", comp);
-});
-paperBtn.addEventListener("click", (e) => {
-    const comp = getComputerChoice();
-    winTag.textContent = playRound("paper", comp);
+
+restartBtn.addEventListener("click", () => {
+  humanScore = 0;
+  computerScore = 0;
+  updateScoreDisplay();
+  resultEl.textContent = "Press a button to start...";
+  choiceButtons.forEach(btn => (btn.disabled = false));
+  restartBtn.classList.add("hidden");
 });
