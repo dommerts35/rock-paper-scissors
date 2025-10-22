@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Rock Paper Scissors</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Rock Paper Scissors</title>
 </head>
-
 <body>
-    <h1>Rock | Paper | Scissors</h1>
+  <main class="game-container">
+    <h1>🕹️ Rock | Paper | Scissors</h1>
     <h3 id="score">Human: 0 | Computer: 0</h3>
+
     <div class="btns">
-        <button id="rock">Rock</button>
-        <button id="scissors">Scissors</button>
-        <button id="paper">Paper</button>
+      <button class="choice-btn" data-choice="rock">🪨 Rock</button>
+      <button class="choice-btn" data-choice="paper">📜 Paper</button>
+      <button class="choice-btn" data-choice="scissors">✂️ Scissors</button>
     </div>
 
     <section id="below">
-        <p id="winText">Choose your weapon to start...</p>
+      <p id="winText">Press a button to start...</p>
+      <button id="restart" class="hidden">🔁 Restart</button>
     </section>
+  </main>
 
-    <script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
-
 </html>
